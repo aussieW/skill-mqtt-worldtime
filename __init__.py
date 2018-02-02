@@ -202,7 +202,7 @@ class mqttskill(MycroftSkill):
         else:
             loc_name = self.default_location
 
-        self.mqqt_connect(dataRequestTopic)
+        self.mqtt_connect(dataRequestTopic)
         self.mqtt_publish("request/" + sen_name + "/" + loc_name, "")
         self.mqtt_disconnect()
 
