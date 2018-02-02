@@ -62,7 +62,7 @@ class mqttskill(MycroftSkill):
     def room_name(self):
         # assume the "name" of the device is the "room name"
         device = DeviceApi().get()
-        return device['description']
+        return device['description'].replace(' ', '_')
 
     @intent_handler(IntentBuilder('handle_automation_command').require("CommandKeyword").require("ModuleKeyword").require("ActionKeyword").optionally("LocationKeyword"))
     def handle_automation_command(self, message):
