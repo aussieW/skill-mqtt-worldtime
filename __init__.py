@@ -57,7 +57,7 @@ class mqttskill(MycroftSkill):
     def mqtt_disconnect(self):
         self.mqttc.disconnect()
 	
-	# from steve-mycroft wink skill
+    # from steve-mycroft wink skill
     @property	
     def room_name(self):
         # assume the "name" of the device is the "room name"
