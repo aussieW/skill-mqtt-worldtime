@@ -44,14 +44,14 @@ class mqttskill(MycroftSkill):
             mqttc.tls_set(self.mqttca)
         LOGGER.info("AJW - connect to: " + self.mqtthost + ":" + str(self.mqttport))
         self.mqttc.connect(self.mqtthost,self.mqttport,10)
-		# if s topic is provided then set up a listener
-		if topic:
+	# if s topic is provided then set up a listener
+	if topic:
             self.mqttc.on_message = self.on_message
             self.mqttc.loop_start()
             self.mqttc.subscribe(topic)
 		
     def mqtt_publish(self, topic, msg):
-	    LOGGER.info("AJW: Published " + topic + ", " + msg)
+	LOGGER.info("AJW: Published " + topic + ", " + msg)
         self.mqttc.publish(topic, msg)
 		
     def mqtt_disconnect(self):
@@ -62,9 +62,9 @@ class mqttskill(MycroftSkill):
     def room_name(self):
         # assume the "name" of the device is the "room name"
         device = DeviceApi().get()
-		return device['name']
+        return device['name']
 
-	@intent_handler(IntentBuilder('handle_automation_command').require("CommandKeyword").require("ModuleKeyword").require("ActionKeyword").optionally("LocationKeyword"))
+    @intent_handler(IntentBuilder('handle_automation_command').require("CommandKeyword").require("ModuleKeyword").require("ActionKeyword").optionally("LocationKeyword"))
     def handle_automation_command(self, message):
         LOGGER.info('AJW: mqtt automation command')
 
@@ -92,7 +92,7 @@ class mqttskill(MycroftSkill):
         self.mqtt_disconnect()
         LOGGER.info(mdl_name + "-" + cmd_name)
 
-	@intent_handler(IntentBuilder('handle_control_command').require("ModuleKeyword").require("AttributeKeyword").require("ValueKeyword").optionally("LocationKeyword"))
+    @intent_handler(IntentBuilder('handle_control_command').require("ModuleKeyword").require("AttributeKeyword").require("ValueKeyword").optionally("LocationKeyword"))
     def handle_control_command(self, message):
 	    # example: "set the kitchen display brightness to 40"
 	
@@ -126,7 +126,7 @@ class mqttskill(MycroftSkill):
 #            self.speak_dialog("not.found", {"command": cmd_name, "action": act_name, "module": dev_name})
             LOGGER.error("Error: {0}".format(e))
 
-	@intent_handler(IntentBuilder('handle_show_world_time').require("ShowWordTime").require("WorldTime").require("City").optionally("LocationKeyword"))
+    @intent_handler(IntentBuilder('handle_show_world_time').require("ShowWordTime").require("WorldTime").require("City").optionally("LocationKeyword"))
     def handle_show_world_time(self, message):
 	    # examples: "show the world time for shanghi on the kitchen display"
 	    #           "display the world time for shanghi"
@@ -156,11 +156,11 @@ class mqttskill(MycroftSkill):
 #            self.speak_dialog("not.found", {"command": cmd_name, "action": act_name, "module": dev_name})
             LOGGER.error("Error: {0}".format(e))
 
-	@intent_handler(IntentBuilder('handle_hide_world_time').require("HideWordTime").require("WorldTime").optionally("LocationKeyword"))
+    @intent_handler(IntentBuilder('handle_hide_world_time').require("HideWordTime").require("WorldTime").optionally("LocationKeyword"))
     def handle_hide_world_time(self, message):
-	    # examples: "hide the world time on the kitchen display"
-	    #           "hide the world time"
-		#           "remove the world time"
+	# examples: "hide the world time on the kitchen display"
+	#           "hide the world time"
+        #           "remove the world time"
 		
         LOGGER.info('AJW: handle show world time')
 		
@@ -186,9 +186,9 @@ class mqttskill(MycroftSkill):
 #            self.speak_dialog("not.found", {"command": cmd_name, "action": act_name, "module": dev_name})
             LOGGER.error("Error: {0}".format(e))
 
-	@intent_handler(IntentBuilder('handle_dataRequest_command').require("RequestKeyword").require("SensorKeyword").require("LocationKeyword"))
+    @intent_handler(IntentBuilder('handle_dataRequest_command').require("RequestKeyword").require("SensorKeyword").require("LocationKeyword"))
     def handle_dataRequest_command(self, message):
-	    # example: "what is the temperature on the deck"
+	# example: "what is the temperature on the deck"
 		
         LOGGER.info('AJW: handle control command')
 		
