@@ -36,7 +36,7 @@ class mqttskill(MycroftSkill):
     def initialize(self):
         pass
 		
-    def mqqt_connect(self, topic=None):
+    def mqtt_connect(self, topic=None):
         self.mqttc = mqtt.Client("MycroftAI_" + self.default_location)
         if (self.mqttauth == "yes"):
             mqttc.username_pw_set(self.mqttuser,self.mqttpass)
@@ -202,7 +202,7 @@ class mqttskill(MycroftSkill):
         else:
             loc_name = self.default_location
 
-        self.mqqt_connect()
+        self.mqqt_connect(dataRequestTopic)
         self.mqtt_publish("request/" + sen_name + "/" + loc_name, "")
         self.mqtt_disconnect()
 
