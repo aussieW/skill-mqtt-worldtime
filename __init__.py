@@ -20,7 +20,7 @@ actionConfirmationTopic = 'automation/action/confirm'
 class mqttskill(MycroftSkill):
 
     def __init__(self):
-        super(mqttskill, self).__init__(name="mymqttskill")
+        super(mqttskill, self).__init__(name="mqttskill")
 
         self.default_location = self.room_name()
        
