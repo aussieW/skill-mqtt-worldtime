@@ -112,28 +112,21 @@ class mqttskill(MycroftSkill):
 
         LOGGER.info('AJW: att: ' + att_name + '; mdl: ' + mdl_name + '; val: ' + val_name + '; loc: ' + loc_name)
 
-        if (self.protocol == "mqtt"):
-            mqttc = mqtt.Client("MycroftAI")            
-            if (self.mqttssl == "yes"):
-                mqttc.tls_set(self.mqttca)
-            LOGGER.info("AJW - connect to: " + self.mqtthost)
-            LOGGER.info("AJW - connect to: " + str(self.mqttport))
-            mqttc.connect(self.mqtthost,self.mqttport,10)
-            mqttc.publish(loc_name + "/" + mdl_name + "/" + att_name, val_name)
-            mqttc.disconnect()
-            self.speak_dialog("cmd.sent")
-        else:
-#            self.speak_dialog("not.found", {"command": cmd_name, "action": act_name, "module": dev_name})
-            LOGGER.error("Error: {0}".format(e))
+        self.mqtt_connect(actionConfirmationTopic)
+        self.mqtt_publish(loc_name + "/" + mdl_name + "/" + att_name, val_name)
+	self.speak_dialog("cmd.sent")
+        # wait for a response before disconnecting
+        time.sleep(10)
+        self.mqtt_disconnect()
 
-    @intent_handler(IntentBuilder('handle_show_world_time').require("ShowWordTime").require("WorldTime").require("City").optionally("LocationKeyword"))
+    @intent_handler(IntentBuilder('handle_show_world_time').require("ShowWordTime").require("WorldTime").require("city").optionally("LocationKeyword"))
     def handle_show_world_time(self, message):
 	    # examples: "show the world time for shanghi on the kitchen display"
 	    #           "display the world time for shanghi"
 		
         LOGGER.info('AJW: handle show world time')
 		
-        city_name = message.data.get("City")
+        city_name = message.data.get("city")
         loc_name = message.data.get("LocationKeyword")
 
         # set a default location in none provided
@@ -141,20 +134,15 @@ class mqttskill(MycroftSkill):
             loc_name = loc_name.replace(' ', '_')
         else:
             loc_name = self.default_location
-
-        if (self.protocol == "mqtt"):
-            mqttc = mqtt.Client("MycroftAI")            
-            if (self.mqttssl == "yes"):
-                mqttc.tls_set(self.mqttca)
-            LOGGER.info("AJW - connect to: " + self.mqtthost)
-            LOGGER.info("AJW - connect to: " + str(self.mqttport))
-            mqttc.connect(self.mqtthost,self.mqttport,10)
-            mqttc.publish(loc_name + "/display/worldtime", city_name)
-            mqttc.disconnect()
-            self.speak_dialog("cmd.sent")
-        else:
-#            self.speak_dialog("not.found", {"command": cmd_name, "action": act_name, "module": dev_name})
-            LOGGER.error("Error: {0}".format(e))
+        
+        self.mqtt_connect(actionConfirmationTopic)
+        LOGGER.info("AJW - connect to: " + self.mqtthost)
+        LOGGER.info("AJW - connect to: " + str(self.mqttport))
+        self.mqttc_publish(loc_name + "/display/worldtime", city_name)
+        self.speak_dialog("cmd.sent")
+        # wait for a response before disconnecting
+        time.sleep(10)
+        self.mqttc_disconnect()
 
     @intent_handler(IntentBuilder('handle_hide_world_time').require("HideWordTime").require("WorldTime").optionally("LocationKeyword"))
     def handle_hide_world_time(self, message):
