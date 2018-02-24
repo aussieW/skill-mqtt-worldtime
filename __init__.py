@@ -42,7 +42,7 @@ class mqttskill(MycroftSkill):
             mqttc.username_pw_set(self.mqttuser,self.mqttpass)
         if (self.mqttssl == "yes"):
             mqttc.tls_set(self.mqttca)
-        LOGGER.info("AJW - connect to: " + self.mqtthost + ":" + str(self.mqttport))
+        LOGGER.info("AJW - connect to: " + self.mqtthost + ":" + str(self.mqttport) + " as MycroftAI_" + self.default_location )
         self.mqttc.connect(self.mqtthost,self.mqttport,10)
 	# if s topic is provided then set up a listener
 	if topic:
