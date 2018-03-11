@@ -119,14 +119,14 @@ class mqttskill(MycroftSkill):
         time.sleep(10)
         self.mqtt_disconnect()
 
-    @intent_handler(IntentBuilder('handle_show_world_time').require("ShowWordTime").require("WorldTime").require("city").optionally("LocationKeyword"))
+    @intent_handler(IntentBuilder('handle_show_world_time').require("ShowWorldTime").require("WorldTime").require("city_name").optionally("LocationKeyword"))
     def handle_show_world_time(self, message):
 	    # examples: "show the world time for shanghi on the kitchen display"
 	    #           "display the world time for shanghi"
 		
         LOGGER.info('AJW: handle show world time')
 		
-        city_name = message.data.get("city")
+        city = message.data.get("city_name")
         loc_name = message.data.get("LocationKeyword")
 
         # set a default location in none provided
@@ -138,7 +138,7 @@ class mqttskill(MycroftSkill):
         self.mqtt_connect(actionConfirmationTopic)
         LOGGER.info("AJW - connect to: " + self.mqtthost)
         LOGGER.info("AJW - connect to: " + str(self.mqttport))
-        self.mqttc_publish(loc_name + "/display/worldtime", city_name)
+        self.mqttc_publish(loc_name + "/display/worldtime", city)
         self.speak_dialog("cmd.sent")
         # wait for a response before disconnecting
         time.sleep(10)
