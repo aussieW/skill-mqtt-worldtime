@@ -119,12 +119,38 @@ class mqttskill(MycroftSkill):
         time.sleep(10)
         self.mqtt_disconnect()
 
-    @intent_handler(IntentBuilder('handle_show_world_time').require("ShowWorldTime").require("WorldTime").require("city_name").optionally("LocationKeyword"))
+    @intent_handler(IntentBuilder('').require("ShowWorldTime").require("WorldTime").optionally("LocationKeyword"))
     def handle_show_world_time(self, message):
-	    # examples: "show the world time for shanghi on the kitchen display"
-	    #           "display the world time for shanghi"
+	    # examples: "show the world time on the kitchen display"
+	    #           "display the world time"
 		
         LOGGER.info('AJW: handle show world time')
+	
+	# ask for the city to display
+	response = self.get_response('which city ould you like to show')
+		
+        city = response
+        loc_name = message.data.get("LocationKeyword")
+
+        # set a default location in none provided
+        if loc_name:
+            loc_name = loc_name.replace(' ', '_')
+        else:
+            loc_name = self.default_location
+        
+        self.mqtt_connect(actionConfirmationTopic)
+        LOGGER.info("AJW - connect to: " + self.mqtthost)
+        LOGGER.info("AJW - connect to: " + str(self.mqttport))
+        self.mqttc_publish(loc_name + "/display/worldtime", city)
+        self.speak_dialog("cmd.sent")
+        # wait for a response before disconnecting
+        time.sleep(10)
+        self.mqttc_disconnect()
+
+    @intent_handler(IntentBuilder('').require("ShowWorldTime").require("WorldTime").require("city_name").optionally("LocationKeyword"))
+    def handle_show_world_time_city(self, message):
+	    # examples: "show the world time for shanghi on the kitchen display"
+	    #           "display the world time for shanghi"
 		
         city = message.data.get("city_name")
         loc_name = message.data.get("LocationKeyword")
