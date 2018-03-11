@@ -128,6 +128,8 @@ class mqttskill(MycroftSkill):
 	
 	# ask for the city to display
 	response = self.get_response('ask.for.city')
+	if not response:
+            return
         city = response
 	
         loc_name = message.data.get("LocationKeyword")
