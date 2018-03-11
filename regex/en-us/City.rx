@@ -1,1 +1,1 @@
-for (?P<city>.*)
+for (?P<city_name>.*)
