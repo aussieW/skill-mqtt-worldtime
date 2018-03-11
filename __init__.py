@@ -169,7 +169,7 @@ class mqttskill(MycroftSkill):
         time.sleep(10)
         self.mqtt_disconnect()
 
-    @intent_handler(IntentBuilder('handle_hide_world_time').require("HideWordTime").require("WorldTime").optionally("LocationKeyword"))
+    @intent_handler(IntentBuilder('handle_hide_world_time').require("HideWorldTime").require("WorldTime").optionally("LocationKeyword"))
     def handle_hide_world_time(self, message):
 	# examples: "hide the world time on the kitchen display"
 	#           "hide the world time"
