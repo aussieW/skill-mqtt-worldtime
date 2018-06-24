@@ -7,7 +7,7 @@ from mycroft.skills.core import MycroftSkill, intent_handler
 from mycroft.util.log import getLogger
 from mycroft.api import DeviceApi
 
-from urllib2 import urlopen  # <<< not sure if this is required
+#from urllib2 import urlopen  # <<< not sure if this is required
 import paho.mqtt.client as mqtt
 
 __author__ = 'aussieW'  # based on the original work of 'jamiehoward430'
@@ -44,7 +44,7 @@ class mqttskill(MycroftSkill):
             mqttc.tls_set(self.mqttca)
         LOGGER.info("AJW - connect to: " + self.mqtthost + ":" + str(self.mqttport) + " as MycroftAI_" + self.default_location )
         self.mqttc.connect(self.mqtthost,self.mqttport,10)
-	# if s topic is provided then set up a listener
+	# if s topic is provided then set up a listene
 	if topic:
             self.mqttc.on_message = self.on_message
             self.mqttc.loop_start()
@@ -114,21 +114,21 @@ class mqttskill(MycroftSkill):
 
         self.mqtt_connect(actionConfirmationTopic)
         self.mqtt_publish(loc_name + "/" + mdl_name + "/" + att_name, val_name)
-	self.speak_dialog("cmd.sent")
+        self.speak_dialog("cmd.sent")
         # wait for a response before disconnecting
         time.sleep(10)
         self.mqtt_disconnect()
 
     @intent_handler(IntentBuilder('').require("ShowWorldTime").require("WorldTime").optionally("LocationKeyword"))
     def handle_show_world_time(self, message):
-	    # examples: "show the world time on the kitchen display"
-	    #           "display the world time"
+        # examples: "show the world time on the kitchen display"
+        #           "display the world time"
 		
         LOGGER.info('AJW: handle show world time')
 	
-	# ask for the city to display
+        # ask for the city to display
 	response = self.get_response('ask.for.city')
-	if not response:
+        if not response:
             return
         city = response
 	
@@ -150,8 +150,8 @@ class mqttskill(MycroftSkill):
 
     @intent_handler(IntentBuilder('').require("ShowWorldTime").require("WorldTime").require("city_name").optionally("LocationKeyword"))
     def handle_show_world_time_city(self, message):
-	    # examples: "show the world time for shanghi on the kitchen display"
-	    #           "display the world time for shanghi"
+        # examples: "show the world time for shanghi on the kitchen display"
+        #           "display the world time for shanghi"
 		
         city = message.data.get("city_name")
         loc_name = message.data.get("LocationKeyword")
