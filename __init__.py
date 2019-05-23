@@ -44,14 +44,14 @@ class mqttskill(MycroftSkill):
             mqttc.tls_set(self.mqttca)
         LOGGER.info("AJW - connect to: " + self.mqtthost + ":" + str(self.mqttport) + " as MycroftAI_" + self.default_location )
         self.mqttc.connect(self.mqtthost,self.mqttport,10)
-	# if s topic is provided then set up a listene
-	if topic:
+        # if s topic is provided then set up a listener
+        if topic:
             self.mqttc.on_message = self.on_message
             self.mqttc.loop_start()
             self.mqttc.subscribe(topic)
 		
     def mqtt_publish(self, topic, msg):
-	LOGGER.info("AJW: Published " + topic + ", " + msg)
+        LOGGER.info("AJW: Published " + topic + ", " + msg)
         self.mqttc.publish(topic, msg)
 		
     def mqtt_disconnect(self):
@@ -85,12 +85,15 @@ class mqttskill(MycroftSkill):
 
         LOGGER.info('AJW: Heard: ' + cmd_name + '; mdl: ' + mdl_name + '; act: ' + act_name + '; loc: ' + loc_name)
 
-        self.mqtt_connect(actionConfirmationTopic)
-        self.mqtt_publish(loc_name + "/" + mdl_name, act_name)
-        # allow time for the action to be performed and a confirmation to be returned
-        time.sleep(10)
-        self.mqtt_disconnect()
-        LOGGER.info(mdl_name + "-" + cmd_name)
+        if mdl_name in ('air_conditioning', 'air_conditioner'):
+            pass
+        else:
+            self.mqtt_connect(actionConfirmationTopic)
+            self.mqtt_publish(loc_name + "/" + mdl_name, act_name)
+            # allow time for the action to be performed and a confirmation to be returned
+            time.sleep(10)
+            self.mqtt_disconnect()
+            LOGGER.info(mdl_name + "-" + cmd_name)
 
     @intent_handler(IntentBuilder('handle_control_command').require("ModuleKeyword").require("AttributeKeyword").require("ValueKeyword").optionally("LocationKeyword"))
     def handle_control_command(self, message):
@@ -121,13 +124,13 @@ class mqttskill(MycroftSkill):
 
     @intent_handler(IntentBuilder('').require("ShowWorldTime").require("WorldTime").optionally("LocationKeyword"))
     def handle_show_world_time(self, message):
-        # examples: "show the world time on the kitchen display"
-        #           "display the world time"
+	    # examples: "show the world time on the kitchen display"
+	    #           "display the world time"
 		
         LOGGER.info('AJW: handle show world time')
 	
-        # ask for the city to display
-	response = self.get_response('ask.for.city')
+	# ask for the city to display
+        response = self.get_response('ask.for.city')
         if not response:
             return
         city = response
@@ -239,6 +242,16 @@ class mqttskill(MycroftSkill):
                 LOGGER.info('AJW: Requested action was unsuccessful')
                 self.speak_dialog('action.unsuccessful')
             return
-        
+
+
+#    def converse(self, utterances, lang="en-us"):
+#        if utterances != None:
+#            LOGGER.info('Utterance = ' + str(utterances))
+#            return True  # Conversation handled successfully
+#        else:
+#            LOGGER.info('Received a NULL utterance. Why??')
+#            return False
+
+
 def create_skill():
     return mqttskill()
