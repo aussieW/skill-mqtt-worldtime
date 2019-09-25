@@ -24,14 +24,14 @@ class mqttskill(MycroftSkill):
 
         self.default_location = self.room_name
        
-        self.protocol = self.config["protocol"]
-        self.mqttssl = self.config["mqtt-ssl"]
-        self.mqttca = self.config["mqtt-ca-cert"]
-        self.mqtthost = self.config["mqtt-host"]
-        self.mqttport = self.config["mqtt-port"]
-        self.mqttauth = self.config["mqtt-auth"]
-        self.mqttuser = self.config["mqtt-user"]
-        self.mqttpass = self.config["mqtt-pass"]
+        self.protocol = self.settings.get('protocol')
+        self.mqttssl = self.settings.get('ssl')
+        self.mqttca = self.settings.get('ca_certificate')
+        self.mqtthost = self.settings.get('host')
+        self.mqttport = self.settings.get('port')
+        self.mqttauth = self.settings.get('auth')
+        self.mqttuser = self.settings.get('username')
+        self.mqttpass = self.settings.get('password')
     
     def initialize(self):
         pass
@@ -39,9 +39,9 @@ class mqttskill(MycroftSkill):
     def mqtt_connect(self, topic=None):
         self.mqttc = mqtt.Client("MycroftAI_" + self.default_location)
         if (self.mqttauth == "yes"):
-            mqttc.username_pw_set(self.mqttuser,self.mqttpass)
+            self.mqttc.username_pw_set(self.mqttuser,self.mqttpass)
         if (self.mqttssl == "yes"):
-            mqttc.tls_set(self.mqttca)
+            self.mqttc.tls_set(self.mqttca)
         LOGGER.info("AJW - connect to: " + self.mqtthost + ":" + str(self.mqttport) + " as MycroftAI_" + self.default_location )
         self.mqttc.connect(self.mqtthost,self.mqttport,10)
         # if s topic is provided then set up a listener
@@ -71,6 +71,7 @@ class mqttskill(MycroftSkill):
         cmd_name = message.data.get("CommandKeyword")
         mdl_name = message.data.get("ModuleKeyword")
         mdl_name = mdl_name.replace(' ', '_')
+        mdl_name = mdl_name.replace('-', '_')
         act_name = message.data.get("ActionKeyword")
         loc_name = message.data.get("LocationKeyword")
 
@@ -86,7 +87,12 @@ class mqttskill(MycroftSkill):
         LOGGER.info('AJW: Heard: ' + cmd_name + '; mdl: ' + mdl_name + '; act: ' + act_name + '; loc: ' + loc_name)
 
         if mdl_name in ('air_conditioning', 'air_conditioner'):
-            pass
+            self.mqtt_connect(actionConfirmationTopic)
+            self.mqtt_publish(loc_name + "/" + mdl_name, act_name)
+            # allow time for the action to be performed and a confirmation to be returned
+            time.sleep(10)
+            self.mqtt_disconnect()
+            LOGGER.info(mdl_name + "-" + cmd_name)
         else:
             self.mqtt_connect(actionConfirmationTopic)
             self.mqtt_publish(loc_name + "/" + mdl_name, act_name)
@@ -97,7 +103,7 @@ class mqttskill(MycroftSkill):
 
     @intent_handler(IntentBuilder('handle_control_command').require("ModuleKeyword").require("AttributeKeyword").require("ValueKeyword").optionally("LocationKeyword"))
     def handle_control_command(self, message):
-	    # example: "set the kitchen display brightness to 40"
+    # example: "set the kitchen display brightness to 40"
 	
         LOGGER.info('AJW: handle control command')
 		
@@ -121,6 +127,21 @@ class mqttskill(MycroftSkill):
         # wait for a response before disconnecting
         time.sleep(10)
         self.mqtt_disconnect()
+
+    @intent_handler(IntentBuilder('').require("CommandKeyword").require("Sonoff").require("ActionKeyword"))
+    def hanle_sonoff_command(self,message):
+
+        LOGGER.info('AJW: handle sonoff command')
+
+        cmnd = message.data.get("Sonoff")
+        command = cmnd.replace(' ', '_')
+        action = message.data.get("ActionKeyword")
+
+        self.mqtt_connect()
+        self.mqtt_publish('cmnd/' + command + '/POWER', action)
+        self.speak_dialog("cmd.sent")
+        self.mqtt_disconnect()
+
 
     @intent_handler(IntentBuilder('').require("ShowWorldTime").require("WorldTime").optionally("LocationKeyword"))
     def handle_show_world_time(self, message):
