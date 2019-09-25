@@ -1,0 +1,61 @@
+{
+  "identifier": "mqtt",
+  "name": "MQTT",
+  "skillMetadata": {
+      "sections": [
+          {
+              "name": "Mqtt",
+              "fields": [
+                  {
+                     "name": "protocol",
+                     "type": "text",
+                     "label": "Protocol",
+                     "value": "mqtt"
+                  },
+                  {
+                     "name": "host",
+                     "type": "text",
+                     "label": "Mqtt host name",
+                     "value": ""
+                  },
+                  {
+                     "name": "port",
+                     "type": "number",
+                     "label": "Mqtt port number",
+                     "value": "1883"
+                  },
+                  {
+                     "name": "ssl",
+                     "type": "text",
+                     "label": "ssl",
+                     "value": "no"
+                  },
+                  {
+                     "name": "ca_certificate",
+                     "type": "text",
+                     "label": "CA Certificate",
+                     "value": ""
+                  },
+                  {
+                     "name": "auth",
+                     "type": "text",
+                     "label": "Authorisation required",
+                     "value": "yes"
+                  },
+                  {
+                     "name": "username",
+                     "type": "text",
+                     "label": "Username",
+                     "value": ""
+                  },
+                  {
+                     "name": "password",
+                     "type": "text",
+                     "label": "Password",
+                     "value": ""
+                  }
+              ]
+          }
+      ]
+  }
+}
