@@ -32,7 +32,9 @@ class mqttskill(MycroftSkill):
         self.mqttauth = self.settings.get('auth')
         self.mqttuser = self.settings.get('username')
         self.mqttpass = self.settings.get('password')
-    
+
+        LOGGER.info("Settings: host:%s, username:%s, password: %s" %(self.mqtthost, self.mqttuser, self.mqttpass)) 
+
     def initialize(self):
         pass
 		
@@ -129,7 +131,7 @@ class mqttskill(MycroftSkill):
         self.mqtt_disconnect()
 
     @intent_handler(IntentBuilder('').require("CommandKeyword").require("Sonoff").require("ActionKeyword"))
-    def hanle_sonoff_command(self,message):
+    def handle_sonoff_command(self,message):
 
         LOGGER.info('AJW: handle sonoff command')
 
@@ -138,7 +140,27 @@ class mqttskill(MycroftSkill):
         action = message.data.get("ActionKeyword")
 
         self.mqtt_connect()
-        self.mqtt_publish('cmnd/' + command + '/POWER', action)
+        #self.mqtt_publish('cmnd/' + command + '/POWER', action)
+        self.mqtt_publish(command + '/cmnd' + '/POWER', action)
+        self.speak_dialog("cmd.sent")
+        self.mqtt_disconnect()
+
+
+    @intent_handler(IntentBuilder('').require("CommandKeyword").require("Connect_SmartHome_RGB").require("ActionKeyword"))
+    def handle_sonoff_RGB_command(self,message):
+
+        LOGGER.info('AJW: handle Connect SmartHome RGB command')
+
+        cmnd = message.data.get("Connect_SmartHome_RGB")
+        command = cmnd.replace(' ', '_')
+        action = message.data.get("ActionKeyword")
+
+        self.mqtt_connect()
+        self.mqtt_publish(command + '/cmnd' + '/POWER', action)
+        # Send additional commands when turning the light on in order to set it to default configuration.
+        if action == 'on':
+            self.mqtt_publish(command + '/cmnd' + '/WHITE', '100')  # Set to white light at full brightness.
+            self.mqtt_publish(command + '/cmnd' + '/CT', '153')  # Set colour temperature to cold.
         self.speak_dialog("cmd.sent")
         self.mqtt_disconnect()
 
@@ -242,7 +264,7 @@ class mqttskill(MycroftSkill):
             loc_name = self.default_location
 
         self.mqtt_connect(dataRequestTopic)
-        self.mqtt_publish("request/" + sen_name + "/" + loc_name, "")
+        self.mqtt_publish("speak/" + sen_name + "/" + loc_name, "")
         self.mqtt_disconnect()
 
 #    def stop(self):
